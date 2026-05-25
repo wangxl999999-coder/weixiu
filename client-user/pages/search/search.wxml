@@ -1,0 +1,37 @@
+<view class="container">
+  <view class="search-bar">
+    <view class="search-input-wrap">
+      <image class="search-icon" src="/images/search.png" />
+      <input class="search-input" placeholder="搜索服务" value="{{keyword}}" bindinput="onInput" confirm-type="search" bindconfirm="search" />
+      <view wx:if="{{keyword}}" class="clear-btn" bindtap="clearKeyword">×</view>
+    </view>
+    <view class="search-btn" bindtap="search">搜索</view>
+  </view>
+
+  <view wx:if="{{serviceList.length === 0}}" class="hot-search">
+    <view class="section-title">热门搜索</view>
+    <view class="hot-keywords">
+      <view wx:for="{{hotKeywords}}" wx:key="index" class="keyword-item" bindtap="searchByKeyword" data-keyword="{{item}}">
+        {{item}}
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{serviceList.length > 0}}" class="search-results">
+    <view class="result-count">共找到{{serviceList.length}}个服务</view>
+    <view class="result-list">
+      <view wx:for="{{serviceList}}" wx:key="id" class="result-item" bindtap="goToDetail" data-id="{{item.id}}">
+        <image class="result-image" src="{{item.icon || item.image}}" mode="aspectFill" />
+        <view class="result-info">
+          <view class="result-name">{{item.name}}</view>
+          <view class="result-desc">{{item.description}}</view>
+          <view class="result-price">¥{{item.price}}起</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{serviceList.length === 0 && keyword}}" class="empty-result">
+    <text>未找到相关服务</text>
+  </view>
+</view>

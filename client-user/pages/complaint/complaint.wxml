@@ -1,0 +1,40 @@
+<view class="container">
+  <view class="type-section">
+    <view class="section-title">投诉类型</view>
+    <view class="type-list">
+      <view wx:for="{{typeList}}" wx:key="key" class="type-item {{type === item.key ? 'active' : ''}}" bindtap="selectType" data-type="{{item.key}}">
+        {{item.name}}
+      </view>
+    </view>
+  </view>
+
+  <view class="content-section">
+    <view class="section-title">投诉内容</view>
+    <textarea class="content-input" placeholder="请详细描述您遇到的问题..." value="{{content}}" bindinput="onContentInput" maxlength="500" />
+  </view>
+
+  <view class="image-section">
+    <view class="section-title">上传凭证（{{images.length}}/5）</view>
+    <view class="image-list">
+      <view wx:for="{{images}}" wx:key="index" class="image-item">
+        <image src="{{item}}" mode="aspectFill" />
+        <view class="remove-btn" bindtap="removeImage" data-index="{{index}}">×</view>
+      </view>
+      <view wx:if="{{images.length < 5}}" class="image-add" bindtap="chooseImage">
+        <text class="add-icon">+</text>
+        <text class="add-text">添加图片</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="contact-section">
+    <view class="section-title">联系方式</view>
+    <input class="contact-input" placeholder="请输入手机号（选填）" value="{{contact}}" bindinput="onContactInput" type="number" maxlength="11" />
+  </view>
+
+  <view class="footer">
+    <view class="submit-btn {{submitting ? 'disabled' : ''}}" bindtap="submit">
+      {{submitting ? '提交中...' : '提交投诉'}}
+    </view>
+  </view>
+</view>

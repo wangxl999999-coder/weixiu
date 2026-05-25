@@ -1,0 +1,158 @@
+<view class="container" wx:if="{{!loading && order}}">
+  <view class="status-bar" style="background-color: {{order.statusColor}}20;">
+    <view class="status-text" style="color: {{order.statusColor}};">{{order.statusText}}</view>
+  </view>
+
+  <view class="order-info">
+    <view class="section">
+      <view class="section-title">服务信息</view>
+      <view class="info-row">
+        <view class="info-label">服务名称</view>
+        <view class="info-value">{{order.service_name}}</view>
+      </view>
+      <view class="info-row">
+        <view class="info-label">服务金额</view>
+        <view class="info-value price">¥{{order.total_price}}</view>
+      </view>
+    </view>
+
+    <view class="section">
+      <view class="section-title">预约信息</view>
+      <view class="info-row">
+        <view class="info-label">预约时间</view>
+        <view class="info-value">{{order.appointment_time}}</view>
+      </view>
+      <view class="info-row" wx:if="{{order.remark}}">
+        <view class="info-label">用户备注</view>
+        <view class="info-value">{{order.remark}}</view>
+      </view>
+    </view>
+
+    <view class="section">
+      <view class="section-title">服务地址</view>
+      <view class="address-info" bindtap="navigateToAddress">
+        <view class="address-user">
+          <text>{{order.address_info.name}}</text>
+          <text class="address-phone">{{order.address_info.phone}}</text>
+        </view>
+        <view class="address-detail">{{order.address_info.province}}{{order.address_info.city}}{{order.address_info.district}}{{order.address_info.detail}}</view>
+      </view>
+    </view>
+
+    <view class="section">
+      <view class="section-title">用户信息</view>
+      <view class="user-info">
+        <image class="user-avatar" src="{{order.user_info.avatar || '/images/default-avatar.png'}}" />
+        <view class="user-detail">
+          <view class="user-name">{{order.user_info.nickname || '用户'}}</view>
+          <view class="user-phone">{{order.user_phone}}</view>
+        </view>
+        <view class="call-btn" bindtap="callUser">
+          <image src="/images/call.png" />
+          <text>联系</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="section" wx:if="{{order.extras && order.extras.length > 0}}">
+      <view class="section-title">服务增项</view>
+      <view wx:for="{{order.extras}}" wx:key="id" class="extra-item">
+        <view class="extra-info">
+          <view class="extra-name">{{item.name}}</view>
+          <view class="extra-price">¥{{item.price}} × {{item.quantity}}</view>
+        </view>
+        <view class="extra-status">
+          <text wx:if="{{item.user_confirm === 0}}" class="status-pending">待确认</text>
+          <text wx:elif="{{item.user_confirm === 1}}" class="status-confirmed">已确认</text>
+          <text wx:else class="status-rejected">已拒绝</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="section" wx:if="{{photoList.length > 0}}">
+      <view class="section-title">服务照片</view>
+      <view class="photo-grid">
+        <view wx:for="{{photoList}}" wx:key="id" class="photo-item" bindtap="previewPhoto" data-src="{{item.image_url}}">
+          <image src="{{item.image_url}}" mode="aspectFill" />
+          <view class="photo-type">
+            <text wx:if="{{item.type === 1}}">服务前</text>
+            <text wx:elif="{{item.type === 2}}">服务中</text>
+            <text wx:else>服务后</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="bottom-bar">
+    <view wx:if="{{order.status === 1}}" class="bar-actions">
+      <view class="bar-btn" bindtap="navigateToAddress">导航</view>
+      <view class="bar-btn" bindtap="callUser">联系用户</view>
+      <view class="bar-btn primary" bindtap="startService">开始服务</view>
+    </view>
+    <view wx:elif="{{order.status === 2}}" class="bar-actions">
+      <view class="bar-btn" bindtap="showPhotoForm">上传照片</view>
+      <view class="bar-btn" bindtap="showExtraForm">添加增项</view>
+      <view class="bar-btn primary" bindtap="completeService">完成服务</view>
+    </view>
+    <view wx:else class="bar-actions">
+      <view class="bar-btn" bindtap="navigateToAddress">导航</view>
+      <view class="bar-btn" bindtap="callUser">联系用户</view>
+    </view>
+  </view>
+
+  <view wx:if="{{showExtraModal}}" class="modal-mask" bindtap="hideExtraModal">
+    <view class="modal-content" catchtap="">
+      <view class="modal-title">添加服务增项</view>
+      <view class="modal-body">
+        <view class="form-item">
+          <text class="form-label">增项名称</text>
+          <input class="form-input" placeholder="请输入增项名称" value="{{extraName}}" bindinput="onExtraNameInput" />
+        </view>
+        <view class="form-item">
+          <text class="form-label">增项价格(元)</text>
+          <input class="form-input" type="digit" placeholder="请输入价格" value="{{extraPrice}}" bindinput="onExtraPriceInput" />
+        </view>
+        <view class="form-item">
+          <text class="form-label">数量</text>
+          <input class="form-input" type="number" placeholder="请输入数量" value="{{extraQuantity}}" bindinput="onExtraQuantityInput" />
+        </view>
+        <view class="form-item">
+          <text class="form-label">描述</text>
+          <textarea class="form-textarea" placeholder="请输入描述(选填)" value="{{extraDescription}}" bindinput="onExtraDescInput" />
+        </view>
+      </view>
+      <view class="modal-footer">
+        <view class="modal-btn" bindtap="hideExtraModal">取消</view>
+        <view class="modal-btn primary" bindtap="submitExtra">提交</view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{showPhotoModal}}" class="modal-mask" bindtap="hidePhotoModal">
+    <view class="modal-content" catchtap="">
+      <view class="modal-title">上传服务照片</view>
+      <view class="modal-body">
+        <view class="photo-type-select">
+          <view class="type-item {{photoType === 1 ? 'active' : ''}}" bindtap="selectPhotoType" data-type="1">
+            <text>服务前</text>
+          </view>
+          <view class="type-item {{photoType === 2 ? 'active' : ''}}" bindtap="selectPhotoType" data-type="2">
+            <text>服务中</text>
+          </view>
+          <view class="type-item {{photoType === 3 ? 'active' : ''}}" bindtap="selectPhotoType" data-type="3">
+            <text>服务后</text>
+          </view>
+        </view>
+      </view>
+      <view class="modal-footer">
+        <view class="modal-btn" bindtap="hidePhotoModal">取消</view>
+        <view class="modal-btn primary" bindtap="uploadPhoto">选择照片</view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<view wx:else class="loading-container">
+  <view class="loading-text">加载中...</view>
+</view>

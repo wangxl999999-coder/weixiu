@@ -1,0 +1,54 @@
+<view class="container">
+  <view wx:if="{{wallet}}" class="wallet-header">
+    <view class="balance-section">
+      <view class="balance-label">账户余额(元)</view>
+      <view class="balance-value">¥{{wallet.balance}}</view>
+      <view wx:if="{{wallet.frozen_balance !== '0.00'}}" class="frozen-balance">冻结：¥{{wallet.frozen_balance}}</view>
+    </view>
+    <view class="action-btns">
+      <view class="action-btn" bindtap="goToWithdraw">
+        <image src="/images/withdraw.png" />
+        <text>提现</text>
+      </view>
+      <view class="action-btn" bindtap="goToIncome">
+        <image src="/images/income.png" />
+        <text>收入明细</text>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{wallet}}" class="stats-section">
+    <view class="stat-item">
+      <view class="stat-value">¥{{wallet.total_income}}</view>
+      <view class="stat-label">累计收入</view>
+    </view>
+    <view class="stat-divider"></view>
+    <view class="stat-item">
+      <view class="stat-value">¥{{wallet.total_withdraw}}</view>
+      <view class="stat-label">累计提现</view>
+    </view>
+  </view>
+
+  <view class="records-section">
+    <view class="section-header">
+      <text class="section-title">资金记录</text>
+    </view>
+    <view wx:if="{{records.length > 0}}" class="records-list">
+      <view wx:for="{{records}}" wx:key="id" class="record-item">
+        <view class="record-info">
+          <view class="record-title">{{item.title}}</view>
+          <view class="record-time">{{item.created_at}}</view>
+        </view>
+        <view class="record-amount {{item.type === 1 ? 'income' : 'expense'}}">
+          {{item.type === 1 ? '+' : '-'}}¥{{item.amount}}
+        </view>
+      </view>
+    </view>
+    <view wx:else class="empty">
+      <image class="empty-icon" src="/images/empty-record.png" />
+      <text class="empty-text">暂无记录</text>
+    </view>
+
+    <view wx:if="{{!hasMore && records.length > 0}}" class="no-more">没有更多了</view>
+  </view>
+</view>

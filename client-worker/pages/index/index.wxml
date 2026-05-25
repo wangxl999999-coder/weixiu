@@ -1,0 +1,62 @@
+<view class="container" wx:if="{{!loading}}">
+  <view class="header" style="background-color: {{statusColor}}20;">
+    <view wx:if="{{workerInfo}}" class="worker-info">
+      <image class="worker-avatar" src="{{workerInfo.avatar || '/images/default-avatar.png'}}" mode="aspectFill" />
+      <view class="worker-detail">
+        <view class="worker-name">{{workerInfo.name}}</view>
+        <view class="worker-status" style="color: {{statusColor}};">{{statusText}}</view>
+      </view>
+      <view wx:if="{{status === 1}}" class="worker-rating">
+        <text class="rating-text">{{workerInfo.rating || 5.0}}分</text>
+      </view>
+    </view>
+    <view wx:else class="login-info" bindtap="goToRegistration">
+      <text>点击登录/注册</text>
+    </view>
+  </view>
+
+  <view class="stats-section">
+    <view class="stat-card income">
+      <view class="stat-label">今日收入</view>
+      <view class="stat-value">¥{{todayIncome}}</view>
+      <view class="stat-sub">{{todayOrders}}单</view>
+    </view>
+    <view class="stat-card order">
+      <view class="stat-label">本月收入</view>
+      <view class="stat-value">¥{{monthIncome}}</view>
+      <view class="stat-sub">{{monthOrders}}单</view>
+    </view>
+  </view>
+
+  <view class="action-section">
+    <view class="action-grid">
+      <view class="action-item" bindtap="goToOrderHall">
+        <image src="/images/order-hall.png" />
+        <text>抢单大厅</text>
+      </view>
+      <view class="action-item" bindtap="goToMyOrders">
+        <image src="/images/my-order.png" />
+        <text>我的订单</text>
+      </view>
+      <view class="action-item" bindtap="goToWallet">
+        <image src="/images/wallet.png" />
+        <text>我的钱包</text>
+      </view>
+      <view class="action-item" bindtap="goToServiceSetting">
+        <image src="/images/service-setting.png" />
+        <text>服务设置</text>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{status !== 1}}" class="tips">
+    <view class="tips-header">温馨提示</view>
+    <view wx:if="{{status === 0}}" class="tips-content">您的资料正在审核中，请耐心等待平台审核</view>
+    <view wx:elif="{{status === 2}}" class="tips-content">您的资料审核未通过，请重新提交</view>
+    <view wx:elif="{{status === 3}}" class="tips-content">您的账号已被禁用，请联系客服</view>
+  </view>
+</view>
+
+<view wx:else class="loading-container">
+  <view class="loading-text">加载中...</view>
+</view>

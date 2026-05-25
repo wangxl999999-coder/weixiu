@@ -1,0 +1,57 @@
+<view class="container">
+  <view class="tabs">
+    <view wx:for="{{tabs}}" wx:key="key" class="tab-item {{currentTab === item.key ? 'active' : ''}}" bindtap="switchTab" data-key="{{item.key}}">
+      {{item.name}}
+    </view>
+  </view>
+
+  <scroll-view class="order-list" scroll-y bindscrolltolower="onReachBottom" refresher-enabled="{{true}}" bindrefresherrefresh="onPullDownRefresh">
+    <view wx:if="{{orders.length > 0}}">
+      <view wx:for="{{orders}}" wx:key="id" class="order-card" bindtap="goToDetail" data-id="{{item.id}}">
+        <view class="order-header">
+          <view class="order-no">订单号：{{item.order_no}}</view>
+          <view class="order-status" style="color: {{item.statusColor}};">{{item.statusText}}</view>
+        </view>
+
+        <view class="order-content">
+          <image class="order-image" src="{{item.service_image || item.service.icon}}" mode="aspectFill" />
+          <view class="order-info">
+            <view class="order-service">{{item.service_name}}</view>
+            <view class="order-address">{{item.address_info.province}}{{item.address_info.city}}{{item.address_info.district}}{{item.address_info.detail}}</view>
+            <view class="order-time">预约：{{item.appointment_time}}</view>
+          </view>
+        </view>
+
+        <view wx:if="{{item.worker}}" class="order-worker">
+          <image class="worker-avatar" src="{{item.worker.avatar || '/images/default-avatar.png'}}" mode="aspectFill" />
+          <view class="worker-info">
+            <text class="worker-name">{{item.worker.name}}</text>
+            <text class="worker-phone">{{item.worker.phone}}</text>
+          </view>
+          <view class="call-btn" catchtap="callWorker" data-phone="{{item.worker.phone}}">
+            <image src="/images/call.png" />
+          </view>
+        </view>
+
+        <view class="order-footer">
+          <view class="order-price">
+            实付：<text class="price-value">¥{{item.pay_price}}</text>
+          </view>
+          <view class="order-actions">
+            <view wx:if="{{item.status === 0}}" class="action-btn cancel" catchtap="cancelOrder" data-id="{{item.id}}">取消订单</view>
+            <view wx:if="{{item.status === 4}}" class="action-btn primary" catchtap="confirmOrder" data-id="{{item.id}}">去评价</view>
+            <view wx:if="{{item.pay_status === 0}}" class="action-btn primary">去支付</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view wx:else class="empty">
+      <image class="empty-icon" src="/images/empty-order.png" />
+      <text class="empty-text">暂无订单</text>
+    </view>
+
+    <view wx:if="{{loading}}" class="loading">加载中...</view>
+    <view wx:if="{{!hasMore && orders.length > 0}}" class="no-more">没有更多了</view>
+  </scroll-view>
+</view>

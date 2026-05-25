@@ -1,0 +1,79 @@
+<view class="container" wx:if="{{!loading}}">
+  <view class="detail-content">
+    <view wx:if="{{service.images.length > 0}}" class="banner-section">
+      <swiper class="image-swiper" indicator-dots autoplay circular>
+        <swiper-item wx:for="{{service.images}}" wx:key="*this" bindtap="onPreviewImage" data-src="{{item}}">
+          <image class="detail-image" src="{{item}}" mode="aspectFill" />
+        </swiper-item>
+      </swiper>
+    </view>
+
+    <view class="info-section">
+      <view class="service-name">{{service.name}}</view>
+      <view class="service-price">
+        <text class="price-symbol">¥</text>
+        <text class="price-value">{{service.base_price}}</text>
+        <text class="price-unit">起</text>
+        <text class="price-desc">· {{service.unit || '次'}}</text>
+      </view>
+      <view class="service-desc">{{service.description}}</view>
+    </view>
+
+    <view class="section">
+      <view class="section-title">服务内容</view>
+      <view class="service-content">{{service.content}}</view>
+    </view>
+
+    <view wx:if="{{service.service_process}}" class="section">
+      <view class="section-title">服务流程</view>
+      <view class="service-content">{{service.service_process}}</view>
+    </view>
+
+    <view wx:if="{{service.notice}}" class="section">
+      <view class="section-title">注意事项</view>
+      <view class="service-content">{{service.notice}}</view>
+    </view>
+
+    <view wx:if="{{workerList.length > 0}}" class="section">
+      <view class="section-title">推荐师傅</view>
+      <view class="worker-list">
+        <view wx:for="{{workerList}}" wx:key="id" class="worker-card {{selectedWorker.id === item.id ? 'selected' : ''}}" bindtap="selectWorker" data-id="{{item.id}}">
+          <image class="worker-avatar" src="{{item.avatar || '/images/default-avatar.png'}}" mode="aspectFill" />
+          <view class="worker-info">
+            <view class="worker-name">
+              {{item.name}}
+              <text wx:if="{{item.work_years}}" class="work-years">从业{{item.work_years}}年</text>
+            </view>
+            <view class="worker-rating">
+              <text class="rating-value">{{item.rating}}分</text>
+              <text class="order-count">接单{{item.order_count || 0}}单</text>
+              <text class="worker-distance">{{item.distance_text}}km</text>
+            </view>
+            <view class="worker-skills">{{item.skills}}</view>
+          </view>
+          <view class="worker-price">¥{{item.base_price || '面议'}}起</view>
+        </view>
+      </view>
+    </view>
+
+    <view style="height: 140rpx;"></view>
+  </view>
+
+  <view class="bottom-bar">
+    <view class="bar-left">
+      <view class="bar-item" bindtap="callWorker" data-phone="{{selectedWorker.phone}}">
+        <image class="bar-icon" src="/images/call.png" />
+        <text>联系</text>
+      </view>
+      <view class="bar-item">
+        <image class="bar-icon" src="/images/share.png" />
+        <text>分享</text>
+      </view>
+    </view>
+    <view class="bar-btn" bindtap="goToBooking">立即预约</view>
+  </view>
+</view>
+
+<view wx:else class="loading-container">
+  <view class="loading-text">加载中...</view>
+</view>

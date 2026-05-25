@@ -1,0 +1,32 @@
+<view class="container">
+  <view class="tabs">
+    <view wx:for="{{tabs}}" wx:key="key" class="tab-item {{currentTab === item.key ? 'active' : ''}}" bindtap="switchTab" data-key="{{item.key}}">
+      {{item.name}}
+    </view>
+  </view>
+
+  <scroll-view class="coupon-list" scroll-y>
+    <view wx:if="{{couponList.length > 0}}">
+      <view wx:for="{{couponList}}" wx:key="id" class="coupon-card {{currentTab !== 1 ? 'disabled' : ''}}">
+        <view class="coupon-left">
+          <view class="coupon-value">
+            <text wx:if="{{item.type === 1}}">¥{{item.value}}</text>
+            <text wx:elif="{{item.type === 2}}">{{item.value}}折</text>
+          </view>
+          <view class="coupon-condition">满{{item.min_amount}}可用</view>
+        </view>
+        <view class="coupon-right">
+          <view class="coupon-name">{{item.name}}</view>
+          <view class="coupon-expire">有效期：{{item.start_date}} 至 {{item.end_date}}</view>
+          <view wx:if="{{item.used_time}}" class="coupon-used">使用时间：{{item.used_time}}</view>
+        </view>
+        <view wx:if="{{currentTab === 1}}" class="coupon-btn" bindtap="goToHome">立即使用</view>
+      </view>
+    </view>
+
+    <view wx:else class="empty">
+      <image class="empty-icon" src="/images/empty-coupon.png" />
+      <text class="empty-text">暂无优惠券</text>
+    </view>
+  </scroll-view>
+</view>

@@ -1,0 +1,39 @@
+<view class="container">
+  <view class="content">
+    <view class="sidebar">
+      <scroll-view scroll-y class="category-nav">
+        <view wx:for="{{categories}}" wx:key="id" class="nav-item {{currentCategory.id === item.id ? 'active' : ''}}" bindtap="onCategoryTap" data-id="{{item.id}}">
+          <text>{{item.name}}</text>
+        </view>
+      </scroll-view>
+    </view>
+
+    <scroll-view class="main" scroll-y bindscrolltolower="onReachBottom" refresher-enabled="{{true}}" bindrefresherrefresh="onPullDownRefresh">
+      <view wx:if="{{services.length > 0}}" class="service-list">
+        <view wx:for="{{services}}" wx:key="id" class="service-item" bindtap="goToServiceDetail" data-id="{{item.id}}">
+          <image class="service-image" src="{{item.images[0] || item.icon}}" mode="aspectFill" />
+          <view class="service-info">
+            <view class="service-name">{{item.name}}</view>
+            <view class="service-desc">{{item.description}}</view>
+            <view class="service-footer">
+              <view class="service-price">
+                <text class="price-symbol">¥</text>
+                <text class="price-value">{{item.base_price}}</text>
+                <text class="price-unit">起</text>
+              </view>
+              <view class="service-sales">已售{{item.sales || 0}}单</view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view wx:else class="empty">
+        <image class="empty-icon" src="/images/empty.png" />
+        <text class="empty-text">暂无服务</text>
+      </view>
+
+      <view wx:if="{{loading}}" class="loading">加载中...</view>
+      <view wx:if="{{!hasMore && services.length > 0}}" class="no-more">没有更多了</view>
+    </scroll-view>
+  </view>
+</view>

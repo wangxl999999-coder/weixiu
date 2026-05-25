@@ -1,0 +1,56 @@
+<view class="container">
+  <view class="tabs">
+    <view wx:for="{{tabs}}" wx:key="key" class="tab-item {{currentTab === item.key ? 'active' : ''}}" bindtap="switchTab" data-key="{{item.key}}">
+      {{item.name}}
+    </view>
+  </view>
+
+  <scroll-view class="order-list" scroll-y bindscrolltolower="onReachBottom">
+    <view wx:if="{{orderList.length > 0}}">
+      <view wx:for="{{orderList}}" wx:key="id" class="order-card" bindtap="goToOrderDetail" data-id="{{item.id}}">
+        <view class="order-header">
+          <text class="order-service">{{item.service_name}}</text>
+          <text class="order-status" style="color: {{item.statusColor}};">{{item.statusText}}</text>
+        </view>
+
+        <view class="order-info">
+          <view class="info-row">
+            <text class="info-label">服务金额</text>
+            <text class="info-value price">¥{{item.total_price}}</text>
+          </view>
+          <view class="info-row">
+            <text class="info-label">预约时间</text>
+            <text class="info-value">{{item.appointment_time}}</text>
+          </view>
+          <view class="info-row">
+            <text class="info-label">服务地址</text>
+            <text class="info-value address">{{item.address_info.province}}{{item.address_info.city}}{{item.address_info.district}}</text>
+          </view>
+        </view>
+
+        <view wx:if="{{item.status === 0 && currentTab === 'hall'}}" class="order-actions">
+          <view class="action-btn primary" catchtap="acceptOrder" data-id="{{item.id}}">立即抢单</view>
+        </view>
+
+        <view wx:if="{{item.status >= 1 && item.status <= 3}}" class="order-actions">
+          <view class="action-btn" catchtap="navigateToAddress" data-order="{{item}}">
+            <image src="/images/location.png" />
+            <text>导航</text>
+          </view>
+          <view class="action-btn" catchtap="callUser" data-phone="{{item.user_phone}}">
+            <image src="/images/call.png" />
+            <text>联系</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view wx:else class="empty">
+      <image class="empty-icon" src="/images/empty-order.png" />
+      <text class="empty-text">暂无订单</text>
+    </view>
+
+    <view wx:if="{{loading}}" class="loading">加载中...</view>
+    <view wx:elif="{{!hasMore && orderList.length > 0}}" class="no-more">没有更多了</view>
+  </scroll-view>
+</view>

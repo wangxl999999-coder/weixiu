@@ -1,0 +1,130 @@
+<view class="container">
+  <view class="header">
+    <view class="location" bindtap="onChooseLocation">
+      <image class="location-icon" src="/images/location.png" />
+      <text class="location-text">{{city}}</text>
+      <image class="arrow" src="/images/arrow-down.png" />
+    </view>
+    <view class="search-bar">
+      <image class="search-icon" src="/images/search.png" />
+      <input class="search-input" placeholder="搜索服务、师傅..." value="{{searchKeyword}}" bindinput="onSearchInput" bindconfirm="onSearchConfirm" confirm-type="search" />
+    </view>
+  </view>
+
+  <scroll-view class="content" scroll-y enable-back-to-top>
+    <view wx:if="{{banners.length > 0}}" class="banner-section">
+      <swiper class="banner-swiper" indicator-dots autoplay circular interval="4000" duration="500" indicator-color="rgba(255,255,255,0.5)" indicator-active-color="#ffffff">
+        <swiper-item wx:for="{{banners}}" wx:key="id" bindtap="goToServiceDetail" data-id="{{item.service_id}}">
+          <image class="banner-image" src="{{item.image_url}}" mode="aspectFill" />
+        </swiper-item>
+      </swiper>
+    </view>
+
+    <view wx:if="{{flashSales.length > 0}}" class="flash-section">
+      <view class="section-header">
+        <view class="section-title">
+          <image class="title-icon" src="/images/flash.png" />
+          <text class="title-text">限时秒杀</text>
+        </view>
+        <view class="section-more" bindtap="goToFlashSale">更多 ></view>
+      </view>
+      <scroll-view class="flash-list" scroll-x>
+        <view wx:for="{{flashSales}}" wx:key="id" class="flash-item" bindtap="goToServiceDetail" data-id="{{item.service_id}}">
+          <image class="flash-image" src="{{item.image}}" mode="aspectFill" />
+          <view class="flash-info">
+            <text class="flash-name">{{item.name}}</text>
+            <view class="flash-price">
+              <text class="price-current">¥{{item.sale_price}}</text>
+              <text class="price-original">¥{{item.original_price}}</text>
+            </view>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+
+    <view wx:if="{{couponBanners.length > 0}}" class="coupon-section" bindtap="goToCouponList">
+      <swiper class="coupon-swiper" autoplay circular interval="5000">
+        <swiper-item wx:for="{{couponBanners}}" wx:key="id">
+          <view class="coupon-banner">
+            <view class="coupon-info">
+              <text class="coupon-title">{{item.name}}</text>
+              <text class="coupon-value">
+                <text wx:if="{{item.type === 1}}">¥{{item.value}}</text>
+                <text wx:elif="{{item.type === 2}}">{{item.value}}折</text>
+              </text>
+            </view>
+            <view class="coupon-btn">立即领取</view>
+          </view>
+        </swiper-item>
+      </swiper>
+    </view>
+
+    <view class="category-section">
+      <view class="section-header">
+        <view class="section-title">
+          <text class="title-text">服务分类</text>
+        </view>
+      </view>
+      <view class="category-grid">
+        <view wx:for="{{categories}}" wx:key="id" class="category-item" bindtap="goToCategory" data-id="{{item.id}}">
+          <image class="category-icon" src="{{item.icon}}" mode="aspectFit" />
+          <text class="category-name">{{item.name}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{hotServices.length > 0}}" class="service-section">
+      <view class="section-header">
+        <view class="section-title">
+          <text class="title-text">热门服务</text>
+        </view>
+      </view>
+      <view class="service-list">
+        <view wx:for="{{hotServices}}" wx:key="id" class="service-item" bindtap="goToServiceDetail" data-id="{{item.id}}">
+          <image class="service-image" src="{{item.images[0] || item.icon}}" mode="aspectFill" />
+          <view class="service-info">
+            <view class="service-name">{{item.name}}</view>
+            <view class="service-desc">{{item.description}}</view>
+            <view class="service-footer">
+              <view class="service-price">
+                <text class="price-symbol">¥</text>
+                <text class="price-value">{{item.base_price}}</text>
+                <text class="price-unit">起</text>
+              </view>
+              <view class="service-sales">已售{{item.sales || 0}}单</view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{nearbyWorkers.length > 0}}" class="worker-section">
+      <view class="section-header">
+        <view class="section-title">
+          <text class="title-text">附近师傅</text>
+        </view>
+      </view>
+      <view class="worker-list">
+        <view wx:for="{{nearbyWorkers}}" wx:key="id" class="worker-item" bindtap="goToWorkerDetail" data-id="{{item.id}}">
+          <image class="worker-avatar" src="{{item.avatar || '/images/default-avatar.png'}}" mode="aspectFill" />
+          <view class="worker-info">
+            <view class="worker-name">
+              {{item.name}}
+              <text wx:if="{{item.work_years}}" class="work-years">从业{{item.work_years}}年</text>
+            </view>
+            <view class="worker-skills">{{item.skills}}</view>
+            <view class="worker-rating">
+              <view class="rating-stars">
+                <text wx:for="{{5}}" wx:for-item="star" wx:key="index" class="star {{star < item.rating ? 'active' : ''}}">★</text>
+              </view>
+              <text class="rating-value">{{item.rating}}分</text>
+              <text class="worker-distance">· {{item.distance_text}}km</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="footer-tips">— 已经到底啦 —</view>
+  </scroll-view>
+</view>

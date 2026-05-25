@@ -1,0 +1,163 @@
+<view class="container" wx:if="{{!loading && order}}">
+  <view class="status-bar" style="background-color: {{order.statusColor}}20;">
+    <view class="status-text" style="color: {{order.statusColor}};">{{order.statusText}}</view>
+  </view>
+
+  <view class="order-info">
+    <view class="section">
+      <view class="section-title">服务信息</view>
+      <view class="info-row">
+        <view class="info-label">服务名称</view>
+        <view class="info-value">{{order.service_name}}</view>
+      </view>
+      <view class="info-row">
+        <view class="info-label">服务金额</view>
+        <view class="info-value price">¥{{order.total_price}}</view>
+      </view>
+      <view class="info-row" wx:if="{{order.coupon_price > 0}}">
+        <view class="info-label">优惠券</view>
+        <view class="info-value">-¥{{order.coupon_price}}</view>
+      </view>
+      <view class="info-row">
+        <view class="info-label">实付金额</view>
+        <view class="info-value price">¥{{order.pay_price}}</view>
+      </view>
+    </view>
+
+    <view class="section">
+      <view class="section-title">预约信息</view>
+      <view class="info-row">
+        <view class="info-label">预约时间</view>
+        <view class="info-value">{{order.appointment_time}}</view>
+      </view>
+      <view class="info-row" wx:if="{{order.remark}}">
+        <view class="info-label">用户备注</view>
+        <view class="info-value">{{order.remark}}</view>
+      </view>
+    </view>
+
+    <view class="section">
+      <view class="section-title">服务地址</view>
+      <view class="address-info" bindtap="navigateToAddress">
+        <view class="address-user">
+          <text>{{order.address_info.name}}</text>
+          <text class="address-phone">{{order.address_info.phone}}</text>
+        </view>
+        <view class="address-detail">{{order.address_info.province}}{{order.address_info.city}}{{order.address_info.district}}{{order.address_info.detail}}</view>
+      </view>
+    </view>
+
+    <view class="section" wx:if="{{order.worker}}">
+      <view class="section-title">服务师傅</view>
+      <view class="worker-info">
+        <image class="worker-avatar" src="{{order.worker.avatar || '/images/default-avatar.png'}}" mode="aspectFill" />
+        <view class="worker-detail">
+          <view class="worker-name">{{order.worker.name}}</view>
+          <view class="worker-rating">{{order.worker.rating}}分 · 接单{{order.worker.order_count || 0}}单</view>
+        </view>
+        <view class="call-btn" bindtap="callWorker">
+          <image src="/images/call.png" />
+          <text>联系</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="section" wx:if="{{order.extras && order.extras.length > 0}}">
+      <view class="section-title">服务增项</view>
+      <view wx:for="{{order.extras}}" wx:key="id" class="extra-item">
+        <view class="extra-info">
+          <view class="extra-name">{{item.name}}</view>
+          <view class="extra-price">¥{{item.price}} × {{item.quantity}}</view>
+        </view>
+        <view class="extra-status">
+          <text wx:if="{{item.user_confirm === 0}}" class="status-pending" bindtap="showExtraConfirm" data-id="{{item.id}}">待确认</text>
+          <text wx:elif="{{item.user_confirm === 1}}" class="status-confirmed">已确认</text>
+          <text wx:else class="status-rejected">已拒绝</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="section" wx:if="{{photoList.length > 0}}">
+      <view class="section-title">服务照片</view>
+      <view class="photo-grid">
+        <view wx:for="{{photoList}}" wx:key="id" class="photo-item" bindtap="previewPhoto" data-src="{{item.image_url}}">
+          <image src="{{item.image_url}}" mode="aspectFill" />
+          <view class="photo-type">
+            <text wx:if="{{item.type === 1}}">服务前</text>
+            <text wx:elif="{{item.type === 2}}">服务中</text>
+            <text wx:else>服务后</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="section">
+      <view class="section-title">订单信息</view>
+      <view class="info-row">
+        <view class="info-label">订单编号</view>
+        <view class="info-value">{{order.order_no}}</view>
+      </view>
+      <view class="info-row">
+        <view class="info-label">创建时间</view>
+        <view class="info-value">{{order.created_at}}</view>
+      </view>
+      <view class="info-row">
+        <view class="info-label">接单时间</view>
+        <view class="info-value">{{order.accept_time || '-'}}</view>
+      </view>
+      <view class="info-row" wx:if="{{order.status >= 4}}">
+        <view class="info-label">完成时间</view>
+        <view class="info-value">{{order.finish_time || '-'}}</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="bottom-bar">
+    <view wx:if="{{order.status === 0}}" class="bar-actions">
+      <view class="bar-btn cancel" bindtap="cancelOrder">取消订单</view>
+    </view>
+    <view wx:elif="{{order.status === 4 && !order.evaluation}}" class="bar-actions">
+      <view class="bar-btn" bindtap="goToComplaint">投诉</view>
+      <view class="bar-btn" bindtap="applyRefund">申请退款</view>
+      <view class="bar-btn primary" bindtap="goToEvaluation">去评价</view>
+    </view>
+    <view wx:elif="{{order.status === 4 && order.evaluation}}" class="bar-actions">
+      <view class="bar-btn" bindtap="goToComplaint">投诉</view>
+    </view>
+    <view wx:else class="bar-actions">
+      <view class="bar-btn" bindtap="callUserService">联系客服</view>
+    </view>
+  </view>
+
+  <view wx:if="{{showExtraConfirm}}" class="modal-mask" bindtap="hideExtraConfirm">
+    <view class="modal-content" catchtap="">
+      <view class="modal-title">确认增项</view>
+      <view class="modal-body">
+        <view class="modal-row">
+        <text class="modal-label">项目名称</text>
+        <text class="modal-value">{{currentExtra.name}}</text>
+        </view>
+        <view class="modal-row">
+          <text class="modal-label">项目价格</text>
+          <text class="modal-value price">¥{{currentExtra.price}}</text>
+        </view>
+        <view class="modal-row">
+          <text class="modal-label">数量</text>
+          <text class="modal-value">{{currentExtra.quantity}}</text>
+        </view>
+        <view wx:if="{{currentExtra.description}}" class="modal-row">
+          <text class="modal-label">描述</text>
+          <text class="modal-value">{{currentExtra.description}}</text>
+        </view>
+      </view>
+      <view class="modal-footer">
+        <view class="modal-btn" bindtap="rejectExtra">拒绝</view>
+        <view class="modal-btn primary" bindtap="confirmExtra">确认</view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<view wx:else class="loading-container">
+  <view class="loading-text">加载中...</view>
+</view>

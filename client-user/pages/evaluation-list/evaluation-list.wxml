@@ -1,0 +1,26 @@
+<view class="container">
+  <view wx:if="{{evaluationList.length > 0}}" class="evaluation-list">
+    <view wx:for="{{evaluationList}}" wx:key="id" class="evaluation-card" bindtap="goToOrderDetail" data-id="{{item.order_id}}">
+      <view class="evaluation-header">
+        <view class="service-name">{{item.service_name}}</view>
+        <view class="evaluation-rating">
+          <text wx:for="{{5}}" wx:for-item="star" wx:key="index" class="star {{index < item.rating ? 'active' : ''}}">★</text>
+        </view>
+      </view>
+      <view class="evaluation-content">{{item.content}}</view>
+      <view wx:if="{{item.images}}" class="evaluation-images">
+        <image wx:for="{{item.images.split(',')}}" wx:key="index" src="{{item}}" mode="aspectFill" />
+      </view>
+      <view class="evaluation-footer">
+        <text wx:if="{{item.is_anonymous}}">匿名用户</text>
+        <text wx:else>{{item.user_name || '用户'}}</text>
+        <text class="evaluation-time">{{item.created_at}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view wx:else class="empty">
+    <image class="empty-icon" src="/images/empty-evaluation.png" />
+    <text class="empty-text">暂无评价</text>
+  </view>
+</view>

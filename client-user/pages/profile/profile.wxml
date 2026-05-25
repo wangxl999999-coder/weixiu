@@ -1,0 +1,86 @@
+<view class="container">
+  <view class="profile-header">
+    <view wx:if="{{userInfo}}" class="user-info" bindtap="editProfile">
+      <image class="user-avatar" src="{{userInfo.avatar || '/images/default-avatar.png'}}" mode="aspectFill" />
+      <view class="user-detail">
+        <view class="user-name">{{userInfo.nickname || '微信用户'}}</view>
+        <view class="user-phone">{{userInfo.phone || '未绑定手机号'}}</view>
+      </view>
+      <image class="arrow" src="/images/arrow-right.png" />
+    </view>
+    <view wx:else class="login-info" bindtap="goToLogin">
+      <view class="login-text">点击登录</view>
+    </view>
+  </view>
+
+  <view class="order-section">
+    <view class="section-header">
+      <text class="section-title">我的订单</text>
+      <view class="section-more" bindtap="goToOrders" data-status="">全部订单 ></view>
+    </view>
+    <view class="order-tabs">
+      <view class="order-tab" bindtap="goToOrders" data-status="0">
+        <view class="tab-icon">
+          <image src="/images/order-pending.png" />
+          <view wx:if="{{orderCounts.pending > 0}}" class="badge">{{orderCounts.pending}}</view>
+        </view>
+        <text>待接单</text>
+      </view>
+      <view class="order-tab" bindtap="goToOrders" data-status="1">
+        <view class="tab-icon">
+          <image src="/images/order-processing.png" />
+          <view wx:if="{{orderCounts.processing > 0}}" class="badge">{{orderCounts.processing}}</view>
+        </view>
+        <text>进行中</text>
+      </view>
+      <view class="order-tab" bindtap="goToOrders" data-status="4">
+        <view class="tab-icon">
+          <image src="/images/order-completed.png" />
+          <view wx:if="{{orderCounts.completed > 0}}" class="badge">{{orderCounts.completed}}</view>
+        </view>
+        <text>已完成</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="menu-section">
+    <view class="menu-item" bindtap="goToCoupon">
+      <image class="menu-icon" src="/images/coupon.png" />
+      <text class="menu-text">优惠券</text>
+      <view wx:if="{{couponCount > 0}}" class="menu-badge">{{couponCount}}张</view>
+      <image class="arrow" src="/images/arrow-right.png" />
+    </view>
+    <view class="menu-item" bindtap="goToAddress">
+      <image class="menu-icon" src="/images/address.png" />
+      <text class="menu-text">地址管理</text>
+      <image class="arrow" src="/images/arrow-right.png" />
+    </view>
+    <view class="menu-item" bindtap="goToEvaluations">
+      <image class="menu-icon" src="/images/evaluation.png" />
+      <text class="menu-text">我的评价</text>
+      <image class="arrow" src="/images/arrow-right.png" />
+    </view>
+    <view class="menu-item" bindtap="goToComplaint">
+      <image class="menu-icon" src="/images/complaint.png" />
+      <text class="menu-text">投诉建议</text>
+      <image class="arrow" src="/images/arrow-right.png" />
+    </view>
+  </view>
+
+  <view class="menu-section">
+    <view class="menu-item" bindtap="callService">
+      <image class="menu-icon" src="/images/service.png" />
+      <text class="menu-text">联系客服</text>
+      <image class="arrow" src="/images/arrow-right.png" />
+    </view>
+    <view wx:if="{{userInfo}}" class="menu-item" bindtap="logout">
+      <image class="menu-icon" src="/images/logout.png" />
+      <text class="menu-text">退出登录</text>
+      <image class="arrow" src="/images/arrow-right.png" />
+    </view>
+  </view>
+
+  <view class="app-info">
+    <text>家政维修 v1.0.0</text>
+  </view>
+</view>

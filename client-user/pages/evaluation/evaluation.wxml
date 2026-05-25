@@ -1,0 +1,55 @@
+<view class="container">
+  <view wx:if="{{order}}" class="order-info">
+    <image class="service-image" src="{{order.service_image || order.service_icon}}" mode="aspectFill" />
+    <view class="service-info">
+      <view class="service-name">{{order.service_name}}</view>
+      <view class="service-time">完成时间：{{order.finish_time}}</view>
+    </view>
+  </view>
+
+  <view class="rating-section">
+    <view class="section-title">服务评分</view>
+    <view class="rating-stars">
+      <view wx:for="{{5}}" wx:key="index" class="star-item" bindtap="selectRating" data-rating="{{index + 1}}">
+        <text class="star {{index < rating ? 'active' : ''}}">★</text>
+      </view>
+    </view>
+    <view class="rating-text">
+      <text wx:if="{{rating >= 5}}">非常满意</text>
+      <text wx:elif="{{rating >= 4}}">比较满意</text>
+      <text wx:elif="{{rating >= 3}}">一般</text>
+      <text wx:elif="{{rating >= 2}}">不太满意</text>
+      <text wx:else>非常不满意</text>
+    </view>
+  </view>
+
+  <view class="content-section">
+    <view class="section-title">评价内容</view>
+    <textarea class="content-input" placeholder="请分享您的服务体验..." value="{{content}}" bindinput="onContentInput" maxlength="500" />
+  </view>
+
+  <view class="image-section">
+    <view class="section-title">上传图片（{{images.length}}/5）</view>
+    <view class="image-list">
+      <view wx:for="{{images}}" wx:key="index" class="image-item">
+        <image src="{{item}}" mode="aspectFill" />
+        <view class="remove-btn" bindtap="removeImage" data-index="{{index}}">×</view>
+      </view>
+      <view wx:if="{{images.length < 5}}" class="image-add" bindtap="chooseImage">
+        <text class="add-icon">+</text>
+        <text class="add-text">添加图片</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="anonymous-section">
+    <text class="anonymous-text">匿名评价</text>
+    <switch checked="{{anonymous}}" bindchange="onAnonymousChange" color="#1890ff" />
+  </view>
+
+  <view class="footer">
+    <view class="submit-btn {{submitting ? 'disabled' : ''}}" bindtap="submit">
+      {{submitting ? '提交中...' : '提交评价'}}
+    </view>
+  </view>
+</view>

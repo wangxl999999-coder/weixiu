@@ -1,0 +1,116 @@
+<view class="container">
+  <view class="booking-content">
+    <view class="section address-section" bindtap="goToAddressList">
+      <view class="section-header">
+        <text class="section-title">服务地址</text>
+        <text class="section-more">更换 ></text>
+      </view>
+      <view wx:if="{{selectedAddress}}" class="address-info">
+        <view class="address-user">
+          <text class="address-name">{{selectedAddress.name}}</text>
+          <text class="address-phone">{{selectedAddress.phone}}</text>
+        </view>
+        <view class="address-detail">{{selectedAddress.province}}{{selectedAddress.city}}{{selectedAddress.district}}{{selectedAddress.detail}}</view>
+      </view>
+      <view wx:else class="no-address" bindtap="addAddress">
+        <text class="no-address-text">请添加服务地址</text>
+        <text class="add-btn">+ 添加</text>
+      </view>
+    </view>
+
+    <view class="section service-section">
+      <view class="service-info">
+        <image class="service-image" src="{{service.images[0] || service.icon}}" mode="aspectFill" />
+        <view class="service-detail">
+          <view class="service-name">{{service.name}}</view>
+          <view class="service-desc">{{service.description}}</view>
+          <view class="service-price">¥{{service.base_price}}起</view>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{worker}}" class="section worker-section">
+      <view class="section-header">
+        <text class="section-title">预约师傅</text>
+      </view>
+      <view class="worker-info">
+        <image class="worker-avatar" src="{{worker.avatar || '/images/default-avatar.png'}}" mode="aspectFill" />
+        <view class="worker-detail">
+          <view class="worker-name">{{worker.name}}</view>
+          <view class="worker-rating">
+            <text class="rating-value">{{worker.rating}}分</text>
+            <text class="worker-distance">{{worker.distance_text}}km</text>
+          </view>
+          <view class="worker-skills">{{worker.skills}}</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="section time-section">
+      <view class="section-header">
+        <text class="section-title">预约时间</text>
+      </view>
+      <view class="time-input" bindtap="chooseTime">
+        <text wx:if="{{appointmentTime}}" class="time-value">{{appointmentTime}}</text>
+        <text wx:else class="time-placeholder">请选择预约时间</text>
+        <image class="time-icon" src="/images/clock.png" />
+      </view>
+      <picker mode="date" fields="minute" start="{{minDate}}" bindchange="onTimePickerChange" wx:if="{{showTimePicker}}">
+        <view style="display:none;"></view>
+      </picker>
+    </view>
+
+    <view wx:if="{{couponList.length > 0}}" class="section coupon-section">
+      <view class="section-header">
+        <text class="section-title">优惠券</text>
+      </view>
+      <view class="coupon-list">
+        <view wx:for="{{couponList}}" wx:key="id" class="coupon-item {{selectedCoupon.id === item.id ? 'selected' : ''}}" bindtap="selectCoupon" data-id="{{item.id}}">
+          <view class="coupon-left">
+            <view class="coupon-value">
+              <text wx:if="{{item.type === 1}}">¥{{item.value}}</text>
+              <text wx:elif="{{item.type === 2}}">{{item.value}}折</text>
+            </view>
+            <view class="coupon-condition">满{{item.min_amount}}可用</view>
+          </view>
+          <view class="coupon-right">
+            <view class="coupon-name">{{item.name}}</view>
+            <view class="coupon-expire">{{item.start_date}}至{{item.end_date}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="section remark-section">
+      <view class="section-header">
+        <text class="section-title">备注</text>
+      </view>
+      <textarea class="remark-input" placeholder="请输入备注信息，如：家中有宠物等" value="{{remark}}" bindinput="onRemarkInput" maxlength="200" />
+    </view>
+
+    <view class="price-section">
+      <view class="price-row">
+        <text class="price-label">服务费用</text>
+        <text class="price-value">¥{{priceDetail.basePrice}}</text>
+      </view>
+      <view wx:if="{{selectedCoupon}}" class="price-row">
+        <text class="price-label">优惠券优惠</text>
+        <text class="price-value discount">-¥{{priceDetail.couponDiscount}}</text>
+      </view>
+      <view class="price-row total">
+        <text class="price-label">合计</text>
+        <text class="price-value total-price">¥{{priceDetail.totalPrice}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="bottom-bar">
+    <view class="bar-price">
+      <text class="bar-label">应付金额</text>
+      <text class="bar-total">¥{{priceDetail.totalPrice}}</text>
+    </view>
+    <view class="bar-btn {{submitting ? 'disabled' : ''}}" bindtap="submitOrder">
+      {{submitting ? '提交中...' : '立即下单'}}
+    </view>
+  </view>
+</view>
