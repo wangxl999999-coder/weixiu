@@ -1,0 +1,47 @@
+<view class="container">
+  <view class="tabs">
+    <view wx:for="{{tabs}}" wx:key="key" class="tab-item {{currentTab === item.key ? 'active' : ''}}" bindtap="switchTab" data-key="{{item.key}}">
+      {{item.name}}
+    </view>
+  </view>
+
+  <view wx:if="{{!loading}}" class="stats-card">
+    <view class="stats-header">
+      <text class="stats-title">收入明细</text>
+      <text class="stats-subtitle">共{{totalOrders}}单</text>
+    </view>
+    <view class="stats-main">
+      <view class="main-label">实际收入</view>
+      <view class="main-value">¥{{actualIncome}}</view>
+    </view>
+    <view class="stats-detail">
+      <view class="detail-item">
+        <view class="detail-label">订单总额</view>
+        <view class="detail-value">¥{{totalIncome}}</view>
+      </view>
+      <view class="detail-item">
+        <view class="detail-label">平台抽成</view>
+        <view class="detail-value fee">¥{{platformFee}}</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="records-section">
+    <view class="section-title">订单明细</view>
+    <view wx:if="{{records.length > 0}}" class="records-list">
+      <view wx:for="{{records}}" wx:key="id" class="record-item">
+        <view class="record-info">
+          <view class="record-service">{{item.service_name}}</view>
+          <view class="record-time">{{item.created_at}}</view>
+        </view>
+        <view class="record-amount">
+          <view class="amount-main">+¥{{item.amount}}</view>
+          <view class="amount-sub">抽成¥{{item.platform_fee}}</view>
+        </view>
+      </view>
+    </view>
+    <view wx:else class="empty">
+      <text>暂无收入记录</text>
+    </view>
+  </view>
+</view>

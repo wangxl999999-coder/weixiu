@@ -1,0 +1,42 @@
+<view class="container">
+  <view class="balance-card">
+    <view class="balance-label">可提现余额(元)</view>
+    <view class="balance-value">¥{{balance}}</view>
+    <view class="balance-tip">提现将在1-3个工作日内到账</view>
+  </view>
+
+  <view class="form-card">
+    <view class="form-item">
+      <text class="form-label">提现金额</text>
+      <view class="amount-input-wrap">
+        <text class="currency">¥</text>
+        <input class="amount-input" type="digit" placeholder="请输入金额" value="{{amount}}" bindinput="onAmountInput" />
+      </view>
+      <view class="all-btn" bindtap="setMaxAmount">全部提现</view>
+    </view>
+    <view class="tip">最低提现1元，提现到微信零钱</view>
+  </view>
+
+  <view class="submit-btn {{submitting ? 'disabled' : ''}}" bindtap="submitWithdraw">
+    {{submitting ? '申请中...' : '提交申请'}}
+  </view>
+
+  <view class="records-section">
+    <view class="section-title">最近提现记录</view>
+    <view wx:if="{{withdrawList.length > 0}}" class="records-list">
+      <view wx:for="{{withdrawList}}" wx:key="id" class="record-item">
+        <view class="record-info">
+          <view class="record-title">提现申请</view>
+          <view class="record-time">{{item.created_at}}</view>
+        </view>
+        <view class="record-amount">-¥{{item.amount}}</view>
+        <view class="record-status">
+          <text wx:if="{{item.status === 0}}" class="status-pending">审核中</text>
+          <text wx:elif="{{item.status === 1}}" class="status-success">已通过</text>
+          <text wx:else class="status-fail">已拒绝</text>
+        </view>
+      </view>
+    </view>
+    <view wx:else class="empty">暂无提现记录</view>
+  </view>
+</view>

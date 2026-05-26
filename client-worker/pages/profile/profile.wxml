@@ -1,0 +1,69 @@
+<view class="container">
+  <view class="profile-header">
+    <view wx:if="{{workerInfo}}" class="worker-info">
+      <image class="worker-avatar" src="{{workerInfo.avatar || '/images/default-avatar.png'}}" mode="aspectFill" bindtap="updateAvatar" />
+      <view class="worker-detail" bindtap="editName">
+        <view class="worker-name">{{workerInfo.name}}</view>
+        <view class="worker-phone">{{workerInfo.phone}}</view>
+      </view>
+      <view class="worker-status" style="background-color: {{statusColor}}20; color: {{statusColor}};">
+        {{statusText}}
+      </view>
+    </view>
+    <view wx:else class="login-info" bindtap="goToRegistration">
+      <text>点击登录/注册</text>
+    </view>
+  </view>
+
+  <view wx:if="{{workerInfo}}" class="stats-section">
+    <view class="stat-item">
+      <view class="stat-value">{{orderCount}}</view>
+      <view class="stat-label">完成订单</view>
+    </view>
+    <view class="stat-divider"></view>
+    <view class="stat-item">
+      <view class="stat-value">{{rating}}</view>
+      <view class="stat-label">综合评分</view>
+    </view>
+    <view class="stat-divider"></view>
+    <view class="stat-item">
+      <view class="stat-value">¥{{deposit}}</view>
+      <view class="stat-label">保证金</view>
+    </view>
+  </view>
+
+  <view wx:if="{{workerInfo}}" class="menu-section">
+    <view class="menu-item" bindtap="goToServiceSetting">
+      <image class="menu-icon" src="/images/service-setting.png" />
+      <text class="menu-text">服务设置</text>
+      <image class="arrow" src="/images/arrow-right.png" />
+    </view>
+    <view class="menu-item" bindtap="goToIncome">
+      <image class="menu-icon" src="/images/income.png" />
+      <text class="menu-text">收入明细</text>
+      <image class="arrow" src="/images/arrow-right.png" />
+    </view>
+    <view class="menu-item" bindtap="goToWallet">
+      <image class="menu-icon" src="/images/wallet.png" />
+      <text class="menu-text">我的钱包</text>
+      <image class="arrow" src="/images/arrow-right.png" />
+    </view>
+  </view>
+
+  <view class="menu-section">
+    <view class="menu-item" bindtap="callService">
+      <image class="menu-icon" src="/images/service.png" />
+      <text class="menu-text">联系客服</text>
+      <image class="arrow" src="/images/arrow-right.png" />
+    </view>
+    <view wx:if="{{workerInfo}}" class="menu-item" bindtap="logout">
+      <image class="menu-icon" src="/images/logout.png" />
+      <text class="menu-text">退出登录</text>
+      <image class="arrow" src="/images/arrow-right.png" />
+    </view>
+  </view>
+
+  <view class="app-info">
+    <text>师傅端 v1.0.0</text>
+  </view>
+</view>

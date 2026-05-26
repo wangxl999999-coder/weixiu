@@ -1,0 +1,56 @@
+<view class="container">
+  <view class="form-card">
+    <view class="form-item" bindtap="chooseLocation">
+      <text class="form-label">服务区域</text>
+      <view class="form-value">
+        <text wx:if="{{serviceArea}}" class="value-text">{{serviceArea}}</text>
+        <text wx:else class="value-placeholder">请选择服务区域</text>
+        <image class="arrow" src="/images/arrow-right.png" />
+      </view>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">服务半径</text>
+      <view class="radius-list">
+        <view wx:for="{{radiusOptions}}" wx:key="index" class="radius-item {{serviceRadius === item ? 'active' : ''}}" bindtap="selectRadius" data-radius="{{item}}">
+          {{item}}km
+        </view>
+      </view>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">工作日</text>
+      <view class="day-list">
+        <view wx:for="{{dayOptions}}" wx:key="index" class="day-item {{workDays.indexOf(item) > -1 ? 'active' : ''}}" bindtap="toggleDay" data-day="{{item}}">
+          {{item}}
+        </view>
+      </view>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">工作时间</text>
+      <view class="time-picker">
+        <picker mode="time" value="{{workStartTime}}" bindchange="onStartTimeChange">
+          <view class="picker-text">{{workStartTime}}</view>
+        </picker>
+        <text class="time-separator">至</text>
+        <picker mode="time" value="{{workEndTime}}" bindchange="onEndTimeChange">
+          <view class="picker-text">{{workEndTime}}</view>
+        </picker>
+      </view>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">服务类型</text>
+      <view class="type-list">
+        <view wx:for="{{typeOptions}}" wx:key="index" class="type-item {{serviceTypes.indexOf(item) > -1 ? 'active' : ''}}" bindtap="toggleType" data-type="{{item}}">
+          {{item}}
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="submit-btn {{submitting ? 'disabled' : ''}}" bindtap="submit">
+    {{submitting ? '保存中...' : '保存设置'}}
+  </view>
+</view>
