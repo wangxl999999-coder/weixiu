@@ -415,11 +415,66 @@ const getOrderStatusCount = async (req, res) => {
   }
 };
 
+const getMyOrders = getOrderList;
+
+const getAvailableWorkers = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const order = await db.Order.findByPk(id);
+    if (!order) {
+      return error(res, '订单不存在', 404);
+    }
+
+    const { latitude, longitude } = order.address_info || {};
+    if (!latitude || !longitude) {
+      return success(res, []);
+    }
+
+    const lat = parseFloat(latitude);
+    const lon = parseFloat(longitude);
+    const radius = config.platform.serviceRadius;
+
+    const workers = await db.Worker.findAll({
+      where: {
+        status: 1,
+        audit_status: 1,
+        is_accept_order: 1,
+        latitude: { [Op.between]: [lat - 0.15, lat + 0.15] },
+        longitude: { [Op.between]: [lon - 0.15, lon + 0.15] }
+      },
+      include: [{
+        model: db.WorkerService,
+        as: 'services',
+        where: { service_id: order.service_id, is_enabled: 1 },
+        attributes: ['custom_price'],
+        required: true
+      }],
+      attributes: ['id', 'name', 'avatar', 'rating', 'order_count', 'latitude', 'longitude', 'work_years']
+    });
+
+    const workersWithDistance = workers.map(worker => {
+      const distance = calculateDistance(lat, lon, worker.latitude, worker.longitude, 'km');
+      return {
+        ...worker.toJSON(),
+        distance: distance.toFixed(1)
+      };
+    }).filter(w => parseFloat(w.distance) <= radius)
+      .sort((a, b) => parseFloat(a.distance) - parseFloat(b.distance));
+
+    success(res, workersWithDistance);
+  } catch (err) {
+    console.error('获取可派单师傅错误:', err);
+    error(res, '获取失败', 500);
+  }
+};
+
 module.exports = {
   createOrder,
   getOrderList,
+  getMyOrders,
   getOrderDetail,
   cancelOrder,
   confirmOrder,
-  getOrderStatusCount
+  getOrderStatusCount,
+  getAvailableWorkers
 };

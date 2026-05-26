@@ -209,5 +209,6 @@ module.exports = {
   updateAddress,
   deleteAddress,
   setDefaultAddress,
+  setDefault: setDefaultAddress,
   getDefaultAddress
 };

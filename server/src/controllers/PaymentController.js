@@ -221,5 +221,6 @@ const createExtraPayment = async (req, res) => {
 module.exports = {
   createPayment,
   payNotify,
+  paymentNotify: payNotify,
   createExtraPayment
 };

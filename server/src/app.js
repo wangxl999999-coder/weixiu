@@ -6,7 +6,7 @@ const path = require('path');
 
 const config = require('./config');
 const db = require('./models');
-const errorHandler = require('./middleware/errorHandler');
+const { errorHandler } = require('./middleware/errorHandler');
 const operationLogger = require('./middleware/operationLogger');
 const routes = require('./routes');
 

@@ -12,29 +12,36 @@ const getDashboardStats = async (req, res) => {
     const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     const yesterdayStart = new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate());
 
-    const [
-      todayOrders, yesterdayOrders, todayIncome, yesterdayIncome,
-      weekOrders, monthOrders, weekIncome, monthIncome,
-      totalUsers, totalWorkers, pendingOrders,
-      pendingWithdraws, pendingComplaints
-    ] = await Promise.all([
-      db.Order.count({ where: { created_at: { [Op.gte]: todayStart } }),
-      db.Order.count({ where: { created_at: { [Op.between]: [yesterdayStart, todayStart] } }),
-      db.Order.sum('pay_price', { where: { created_at: { [Op.gte]: todayStart }, status: 4 }) || 0,
-      db.Order.sum('pay_price', { where: { created_at: { [Op.between]: [yesterdayStart, todayStart] }, status: 4 }) || 0,
-      db.Order.count({ where: { created_at: { [Op.gte]: weekStart } }),
-      db.Order.count({ where: { created_at: { [Op.gte]: monthStart } }),
-      db.Order.sum('pay_price', { where: { created_at: { [Op.gte]: weekStart }, status: 4 }) || 0,
-      db.Order.sum('pay_price', { where: { created_at: { [Op.gte]: monthStart }, status: 4 }) || 0,
+    const results = await Promise.all([
+      db.Order.count({ where: { created_at: { [Op.gte]: todayStart } } }),
+      db.Order.count({ where: { created_at: { [Op.between]: [yesterdayStart, todayStart] } } }),
+      db.Order.sum('pay_price', { where: { created_at: { [Op.gte]: todayStart }, status: 4 } }),
+      db.Order.sum('pay_price', { where: { created_at: { [Op.between]: [yesterdayStart, todayStart] }, status: 4 } }),
+      db.Order.count({ where: { created_at: { [Op.gte]: weekStart } } }),
+      db.Order.count({ where: { created_at: { [Op.gte]: monthStart } } }),
+      db.Order.sum('pay_price', { where: { created_at: { [Op.gte]: weekStart }, status: 4 } }),
+      db.Order.sum('pay_price', { where: { created_at: { [Op.gte]: monthStart }, status: 4 } }),
       db.User.count(),
       db.Worker.count({ where: { audit_status: 1 } }),
-      db.Order.count({ where: { status: { [Op.in]: [0, 1, 2, 3] } }),
+      db.Order.count({ where: { status: { [Op.in]: [0, 1, 2, 3] } } }),
       db.Withdrawal.count({ where: { status: 0 } }),
       db.Complaint.count({ where: { status: 0 } })
     ]);
 
-    const orderGrowth = yesterdayOrders === 0 ? 100 : Math.round(((todayOrders - yesterdayOrders) / yesterdayOrders * 100;
-    const incomeGrowth = yesterdayIncome === 0 ? 100 : Math.round(((todayIncome - yesterdayIncome) / yesterdayIncome * 100;
+    const [
+      todayOrders, yesterdayOrders, todayIncomeRaw, yesterdayIncomeRaw,
+      weekOrders, monthOrders, weekIncomeRaw, monthIncomeRaw,
+      totalUsers, totalWorkers, pendingOrders,
+      pendingWithdraws, pendingComplaints
+    ] = results;
+
+    const todayIncome = todayIncomeRaw || 0;
+    const yesterdayIncome = yesterdayIncomeRaw || 0;
+    const weekIncome = weekIncomeRaw || 0;
+    const monthIncome = monthIncomeRaw || 0;
+
+    const orderGrowth = yesterdayOrders === 0 ? 100 : Math.round(((todayOrders - yesterdayOrders) / yesterdayOrders) * 100);
+    const incomeGrowth = yesterdayIncome === 0 ? 100 : Math.round(((todayIncome - yesterdayIncome) / yesterdayIncome) * 100);
 
     success(res, {
       today: {
@@ -155,7 +162,7 @@ const getServiceStats = async (req, res) => {
         [db.Sequelize.fn('SUM', db.Sequelize.col('pay_price')), 'amount']
       ],
       group: ['service_id'],
-      order: [[db.Sequelize.literal('count'), 'DESC'],
+      order: [[db.Sequelize.literal('count'), 'DESC']],
       limit: 10,
       raw: true
     });
@@ -234,7 +241,7 @@ const getRegionStats = async (req, res) => {
         [db.Sequelize.fn('SUM', db.Sequelize.col('pay_price')), 'amount']
       ],
       group: ['city'],
-      order: [[db.Sequelize.literal('count'), 'DESC'],
+      order: [[db.Sequelize.literal('count'), 'DESC']],
       limit: 20,
       raw: true
     });

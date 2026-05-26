@@ -1,7 +1,7 @@
 const { Op } = require('sequelize');
 const moment = require('moment');
 const db = require('../models');
-const { success, paginate } = require('../utils/response');
+const { success, error, paginate } = require('../utils/response');
 const { calculateDistance } = require('../utils');
 const config = require('../config');
 
@@ -318,6 +318,33 @@ const getNearbyWorkers = async (req, res) => {
   }
 };
 
+const getCouponBanners = async (req, res) => {
+  try {
+    const now = new Date();
+    const coupons = await db.Coupon.findAll({
+      where: {
+        status: 1,
+        [Op.or]: [
+          { total_count: 0 },
+          { received_count: { [Op.lt]: db.Sequelize.col('total_count') } }
+        ],
+        [Op.or]: [
+          { valid_type: 1, valid_start_date: { [Op.lte]: now }, valid_end_date: { [Op.gte]: now } },
+          { valid_type: 2 }
+        ]
+      },
+      order: [['id', 'DESC']],
+      limit: 5,
+      attributes: ['id', 'name', 'type', 'value', 'min_amount', 'description']
+    });
+
+    success(res, coupons);
+  } catch (err) {
+    console.error('获取优惠券横幅错误:', err);
+    error(res, '获取失败', 500);
+  }
+};
+
 module.exports = {
   getHomeData,
   getCategories,
@@ -326,5 +353,6 @@ module.exports = {
   searchServices,
   getHotKeywords,
   getFlashSales,
-  getNearbyWorkers
+  getNearbyWorkers,
+  getCouponBanners
 };

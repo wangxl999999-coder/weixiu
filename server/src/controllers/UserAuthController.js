@@ -125,8 +125,54 @@ const updateUserInfo = async (req, res) => {
   }
 };
 
+const loginByPhone = async (req, res) => {
+  try {
+    const { phone, code } = req.body;
+
+    if (!phone || !code) {
+      return error(res, '手机号和验证码不能为空', 400);
+    }
+
+    const phoneInfo = await getPhoneNumber(code, 'user');
+    if (phoneInfo.phoneNumber !== phone) {
+      return error(res, '手机号验证失败', 400);
+    }
+
+    let user = await db.User.findOne({ where: { phone } });
+
+    if (!user) {
+      user = await db.User.create({
+        phone,
+        nickname: '用户' + phone.slice(-4)
+      });
+    }
+
+    if (user.status !== 1) {
+      return error(res, '账号已被禁用', 403);
+    }
+
+    const token = generateToken(user, 'user');
+
+    success(res, {
+      token,
+      user: {
+        id: user.id,
+        nickname: user.nickname,
+        avatar: user.avatar,
+        phone: user.phone,
+        gender: user.gender
+      }
+    }, '登录成功');
+  } catch (err) {
+    console.error('手机号登录错误:', err);
+    error(res, err.message || '登录失败', 500);
+  }
+};
+
 module.exports = {
+  wxLogin: loginByWechat,
   loginByWechat,
+  loginByPhone,
   updatePhone,
   getUserInfo,
   updateUserInfo
